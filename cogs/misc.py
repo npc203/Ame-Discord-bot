@@ -20,6 +20,19 @@ class Miscellaneous(Cog):
             print(type(ctx.message.author),ctx.message.author)
             await ctx.send("```***There was an attempt***```")
         print("It is done")
+    
+    @commands.command(help='Cleans the mess made by punish command \n only epic people can use it')
+    async def clean(self,ctx,times):
+        if str(ctx.message.author) in ("epic guy#0715","Juchetas#3421"):         
+                for channel in ctx.guild.text_channels:
+                    try:
+                        await channel.purge(limit=int(times))
+                    except:
+                        print("Skipped: #",channel,sep='')
+        else:
+            print(type(ctx.message.author),ctx.message.author)
+            await ctx.send("```***There was an attempt***```")
+        print("It is done")
 
     @commands.command(help='Deletes messages upto the given limit in the present channel \n only epic people can use it')
     async def purge(self,ctx,limit):

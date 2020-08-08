@@ -1,5 +1,5 @@
 import requests
-from html.parser import HTMLParser
+from html import unescape
 from bs4 import BeautifulSoup
 import wikipedia
 import discord
@@ -30,7 +30,6 @@ class Information(Cog):
     def __init__(self):
         self.headers = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
         self.URL = 'https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/'
-        self.h = HTMLParser()
         
     
     @commands.command(help="Get's the player count in EBC")
@@ -41,11 +40,16 @@ class Information(Cog):
 
     @commands.command(help="Get's a random joke")
     async def joke(self,ctx):
-        await  ctx.send(self.h.unescape(random.choice([geek, icanhazdad, chucknorris, icndb])()))
+        await  ctx.send(random.choice([geek,icanhazdad,chucknorris,icndb])())
 
-    @commands.command(help="Get's a random quote")
+    @commands.command(help="Get's a random quote/big brain from the internet")
     async def quote(self,ctx):
-        await  ctx.send(self.h.unescape(random.choice([stormconsultancy, quotesondesign])()))
+        a=random.choice([stormconsultancy, quotesondesign])
+        print("getting stuff from:"+str(a))
+        if a==quotesondesign:
+            await  ctx.send(unescape(random.choice(a(1))).replace('<p>','').replace('</p>',''))
+        else:
+             await  ctx.send(unescape(a()))
 
     @commands.command(help='Throws random wiki articles \n if argument is given, tries to get the specified page \n [Very unreliable] ')
     async def wiki(self,ctx,*arg):
