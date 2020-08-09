@@ -8,7 +8,7 @@ class Miscellaneous(Cog):
     @commands.command(help='Meant for Pinging the given name on every available text channel \n only epic people can use it')
     async def punish(self,ctx,name,times):
         if str(ctx.message.author) in ("epic guy#0715","Juchetas#3421"):
-                ctx.message.delete()
+                await ctx.message.delete()
                 for channel in ctx.guild.text_channels:
                     try:
                         for _ in range(int(times)):
@@ -24,7 +24,7 @@ class Miscellaneous(Cog):
     @commands.command(help='Cleans the mess made by punish command \n only epic people can use it')
     async def clean(self,ctx,times):
         if str(ctx.message.author) in ("epic guy#0715","Juchetas#3421"): 
-                ctx.message.delete()        
+                await ctx.message.delete()        
                 for channel in ctx.guild.text_channels:
                     try:
                         await channel.purge(limit=int(times))
@@ -38,7 +38,7 @@ class Miscellaneous(Cog):
     @commands.command(help='Deletes messages upto the given limit in the present channel \n only epic people can use it')
     async def purge(self,ctx,limit):
         if str(ctx.message.author) in ("epic guy#0715","krsy123#3657"):
-            ctx.message.delete()
+            await ctx.message.delete()
             await ctx.channel.purge(limit=int(limit))
         else:
             await ctx.send("***There was an attempt***")
