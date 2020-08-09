@@ -1,3 +1,4 @@
 token.txt
 logs/
-*.pyc 
+*.pyc
+env/

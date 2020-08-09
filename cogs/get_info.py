@@ -45,7 +45,7 @@ class Information(Cog):
     @commands.command(help="Get's a random quote/big brain from the internet")
     async def quote(self,ctx):
         a=random.choice([stormconsultancy, quotesondesign])
-        print("getting stuff from:"+str(a))
+        #print("getting stuff from:"+str(a))
         if a==quotesondesign:
             await  ctx.send(unescape(random.choice(a(1))).replace('<p>','').replace('</p>',''))
         else:
