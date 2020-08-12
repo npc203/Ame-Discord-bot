@@ -37,7 +37,7 @@ class Chats(Cog):
             await ctx.send('Error, you suck at typing kiddo')
     
     @commands.command(aliases=['UwU', 'uwu', 'owo','OWO','UWU'],help="Made for the weebs")
-    async def OwO(self,ctx):
+    async def OwO(self,ctx,*args):
         a="""OwO 
             Owo
             owO 
@@ -118,6 +118,8 @@ class Chats(Cog):
             ✼ ҉ (O꒳O) ҉ ✼
             ✼ ҉♡ (。O⁄ ⁄ω⁄ ⁄ O。) ҉♡ ✼
             ✧･ﾟ: *✧･ﾟ:*(OwO )*:･ﾟ✧*:･ﾟ✧""".split('\n')
+        if args[0]=='c':
+            await ctx.message.delete()
         await ctx.send(random.choice(a))
             
 
