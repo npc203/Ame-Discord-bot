@@ -1,5 +1,5 @@
 import datetime
-print(datetime.datetime.now())
-
-with open('guilds.txt','a') as f:
-    f.write(str(datetime.datetime.now())+'guild_name,'+'command')
+import requests,json
+r=json.loads(requests.get("https://official-joke-api.appspot.com/random_joke").text)
+print(type(r["setup"]))
+print(r["punchline"])

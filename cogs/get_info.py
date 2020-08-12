@@ -5,7 +5,7 @@ import wikipedia
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random
+import random,json
 from joke.jokes import *
 from joke.quotes import *
 
@@ -40,7 +40,8 @@ class Information(Cog):
 
     @commands.command(help="Get's a random joke")
     async def joke(self,ctx):
-        await  ctx.send(random.choice([geek,icanhazdad,chucknorris,icndb])())
+        r=json.loads(requests.get("https://official-joke-api.appspot.com/random_joke").text)
+        await  ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
 
     @commands.command(help="Get's a random quote/big brain from the internet")
     async def quote(self,ctx):

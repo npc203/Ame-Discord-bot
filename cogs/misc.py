@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random
-
+import random,requests
 class Miscellaneous(Cog):
     def __init__(self,bot):
         self.perms=("Admin","Owner")
