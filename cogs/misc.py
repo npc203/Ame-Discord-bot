@@ -43,14 +43,14 @@ class Miscellaneous(Cog):
         print("It is done")
 
     @commands.command(help='Deletes messages upto the given limit in the present channel \n only epic people can use it')
-    async def purge(self,ctx,limit):
+    async def purge(self,ctx,limit:int):
         #print([str(i.name) for i in ctx.message.author.roles],self.perms )
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
             await ctx.message.delete()
             if limit>self.limit:
                 await ctx.send("Pls don't abuse me senpai uwu")
             else:
-                await ctx.channel.purge(limit=int(limit))
+                await ctx.channel.purge(limit=limit)
         else:
             await ctx.send("***There was an attempt***")
     
