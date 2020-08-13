@@ -9,34 +9,33 @@ class Chats(Cog):
         self.perms=("Admin","Owner","Co-Owner")
     
     @commands.command(help='facts module:\n1.add\n2.list\n3.remove\n4.no argument = random fact')
-    async def facts(self,ctx,*args):
-        await ctx.message.delete()    
+    async def facts(self,ctx,*args):   
         self.db = self.bot.get_channel(743058819545956384)
         try:
             a=(await self.db.history(limit=200).flatten())[0]
         except IndexError:
             await self.db.send("facts:")       
         if not args:
-            await ctx.send(random.choice([i for i in a.content.split('\n')][1:]))
-        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            if args[0]=='list':         
-                if str(ctx.message.author)=="epic guy#0715":
+            await ctx.send('```yaml\nfact: '+random.choice([i for i in a.content.split('\n')][1:])+"\nrequested by: "+str(ctx.message.author)+'```')
+        elif len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
+            await ctx.message.delete()   
+            if args[0]=='list':       
+                if str(ctx.message.author) in ("epic guy#0715","Remichaan#6626"):
                     await ctx.send('```'+'Facts List:\n'+'\n'.join([str(i)+'. '+a for i,a in enumerate([i for i in a.content.split('\n')][1:],1)])+'```')
                 else:
                     await ctx.send('```'+"Why are you gay?"+'```')
             elif args[0]=='add':
                 msg=' '.join(args[1:])
                 await a.edit(content=a.content+'\n'+msg)
-                await ctx.send("```fact added: "+msg+"```")
+                await ctx.send("```yaml\nfact added: "+msg+"\nby: "+str(ctx.message.author)+"```")
             elif args[0]=='remove':
                 try:
-                    if int(args[1])<=0:
+                    if int(args[1])==0:
                         await ctx.send("```Enter valid index pls```")
                     else:
                         msgs=[i for i in a.content.split('\n')]
-                        msgs.pop(int(args[1]))
+                        await ctx.send("```yaml\nfact removed: "+msgs.pop(int(args[1]))+"\nby: "+str(ctx.message.author)+"```")
                         await a.edit(content='\n'.join(msgs))
-                        await ctx.send("```fact removed```")
                 except IndexError:
                     await ctx.send('Enter valid index pls')
             elif args[0]=='clean':
@@ -44,13 +43,13 @@ class Chats(Cog):
                     msgs=[i for i in a.content.split('\n')]
                     del msgs[int(args[1]):int(args[2])+1]
                     await a.edit(content='\n'.join(msgs))
-                    await ctx.send("```facts removed```")
+                    await ctx.send("```yaml\nfacts cleaned by: "+str(ctx.message.author)+"```")
                 except IndexError:
                     await ctx.send('Enter valid index range pls')
             else:
-                await ctx.send('Error, you suck at typing kiddo')
+                await ctx.send('Error, you suck at typing kiddo, '+str(ctx.message.author))
         else:
-            await ctx.send('```Not enough permissions NOOB```')
+            await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\n fact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
         
     @commands.command(aliases=['UwU', 'uwu', 'owo','OWO','UWU'],help="Made for the weebs")
     async def OwO(self,ctx,*args):
