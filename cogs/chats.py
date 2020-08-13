@@ -7,7 +7,7 @@ class Chats(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
-       
+    
     @commands.command(help='facts module:\n1.add\n2.list\n3.remove\n4.no argument = random fact')
     async def facts(self,ctx,*args):
         await ctx.message.delete()    
@@ -137,8 +137,7 @@ class Chats(Cog):
         if args:
             if args[0]=='c':
                 await ctx.message.delete()
-        await ctx.send(random.choice(a))
-            
+        await ctx.send(random.choice(a))            
 
 def setup(bot):
     bot.add_cog(Chats(bot))
