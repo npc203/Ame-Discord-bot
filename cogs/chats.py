@@ -134,8 +134,9 @@ class Chats(Cog):
             ✼ ҉ (O꒳O) ҉ ✼
             ✼ ҉♡ (。O⁄ ⁄ω⁄ ⁄ O。) ҉♡ ✼
             ✧･ﾟ: *✧･ﾟ:*(OwO )*:･ﾟ✧*:･ﾟ✧""".split('\n')
-        if args[0]=='c':
-            await ctx.message.delete()
+        if args:
+            if args[0]=='c':
+                await ctx.message.delete()
         await ctx.send(random.choice(a))
             
 
