@@ -6,20 +6,21 @@ import pickle
 class Chats(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.perms=("Admin","Owner","Co-Owner")
        
     @commands.command(help='facts module:\n1.add\n2.list\n3.remove\n4.no argument = random fact')
     async def facts(self,ctx,*args):
-        await ctx.message.delete()
+        await ctx.message.delete()    
+        self.db = self.bot.get_channel(743058819545956384)
+        try:
+            a=(await self.db.history(limit=200).flatten())[0]
+        except IndexError:
+            await self.db.send("facts:")       
+        if not args:
+            await ctx.send(random.choice([i for i in a.content.split('\n')][1:]))
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            self.db = self.bot.get_channel(743058819545956384)
-            try:
-                a=(await self.db.history(limit=200).flatten())[0]
-            except IndexError:
-                await self.db.send("facts:")       
-            if not args:
-                await ctx.send(random.choice([i for i in a.content.split('\n')][1:]))
-            elif args[0]=='list':         
-                if ctx.message.author=="epic guy#0715":
+            if args[0]=='list':         
+                if str(ctx.message.author)=="epic guy#0715":
                     await ctx.send('```'+'Facts List:\n'+'\n'.join([str(i)+'. '+a for i,a in enumerate([i for i in a.content.split('\n')][1:],1)])+'```')
                 else:
                     await ctx.send('```'+"Why are you gay?"+'```')
@@ -43,14 +44,14 @@ class Chats(Cog):
                     msgs=[i for i in a.content.split('\n')]
                     del msgs[int(args[1]):int(args[2])+1]
                     await a.edit(content='\n'.join(msgs))
-                    await ctx.send("```fact removed```")
+                    await ctx.send("```facts removed```")
                 except IndexError:
                     await ctx.send('Enter valid index range pls')
             else:
                 await ctx.send('Error, you suck at typing kiddo')
         else:
             await ctx.send('```Not enough permissions NOOB```')
-    
+        
     @commands.command(aliases=['UwU', 'uwu', 'owo','OWO','UWU'],help="Made for the weebs")
     async def OwO(self,ctx,*args):
         a="""OwO 
