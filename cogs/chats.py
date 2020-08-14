@@ -8,6 +8,7 @@ class Chats(Cog):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
     
+    @commands.cooldown(1, 7, commands.BucketType.user)
     @commands.command(help='facts module:\n1.add\n2.list\n3.remove\n4.no argument = random fact')
     async def facts(self,ctx,*args):   
         self.db = self.bot.get_channel(743058819545956384)
@@ -16,7 +17,7 @@ class Chats(Cog):
         except IndexError:
             await self.db.send("facts:")       
         if not args:
-            await ctx.send('```yaml\nfact: '+random.choice([i for i in a.content.split('\n')][1:])+"\nrequested by: "+str(ctx.message.author)+'```')
+            await ctx.send('```'+random.choice([i for i in a.content.split('\n')][1:])+'```')
         elif len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
             await ctx.message.delete()   
             if args[0]=='list':       
@@ -49,7 +50,7 @@ class Chats(Cog):
             else:
                 await ctx.send('Error, you suck at typing kiddo, '+str(ctx.message.author))
         else:
-            await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\n fact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
+            await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\nfact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
         
     @commands.command(aliases=['UwU', 'uwu', 'owo','OWO','UWU'],help="Made for the weebs")
     async def OwO(self,ctx,*args):
@@ -136,7 +137,15 @@ class Chats(Cog):
         if args:
             if args[0]=='c':
                 await ctx.message.delete()
-        await ctx.send(random.choice(a))            
+        await ctx.send(random.choice(a))     
+
+    @facts.error
+    async def cool_dude(self,ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(error.retry_after)
+            await ctx.send(msg)
+        else:
+            raise error       
 
 def setup(bot):
     bot.add_cog(Chats(bot))
