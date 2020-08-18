@@ -2,56 +2,69 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 import random
-import pickle
+import asyncio
 class Chats(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
     
     @commands.cooldown(1, 7, commands.BucketType.user)
-    @commands.command(help='facts module:\n1.add\n2.list\n3.remove\n4.no argument = random fact')
+    @commands.command(help='facts module:\n1.add\n2.list\n4.no argument = random fact')
     async def facts(self,ctx,*args):   
         self.db = self.bot.get_channel(743058819545956384)
         try:
-            a=(await self.db.history(limit=200).flatten())[0]
+            a=(await self.db.history(limit=200).flatten())
+            size = len(a)//10+1
         except IndexError:
-            await self.db.send("facts:")       
+            pass    
         if not args:
-            await ctx.send('```'+random.choice([i for i in a.content.split('\n')][1:])+'```')
+            await ctx.send('```'+random.choice([i.content for i in a])+'```')
         elif len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            await ctx.message.delete()   
+            await ctx.message.delete() 
+            def check(reaction, user):
+                return str(reaction.emoji) in ['⬅️', '➡️']
+                #return user == ctx.message.author and str(reaction.emoji) in ['⬅️', '➡️']  
             if args[0]=='list':       
                 if str(ctx.message.author) in ("epic guy#0715","Remichaan#6626"):
-                    await ctx.send('```'+'Facts List:\n'+'\n'.join([str(i)+'. '+a for i,a in enumerate([i for i in a.content.split('\n')][1:],1)])+'```')
+                    page= 1
+                    actual=[str(i)+'. '+a for i,a in enumerate([i.content for i in a],1)]
+                    show = await ctx.send('```'+'Facts List:\n\n'+'\n'.join(actual[:10])+f'\n\n\npage {page}/{size}'+'```')
+                    await show.add_reaction( '⬅️')
+                    await show.add_reaction('➡️')                  
+                    while True:
+                        try:
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
+                            #print(reaction.emoji)
+                            if  page>size:
+                                page-=1
+                            elif page<1:
+                                page+=1
+                            else:
+                                if reaction.emoji == '⬅️':
+                                    page -= 1
+                                elif reaction.emoji == '➡️':
+                                    page += 1
+                                await show.edit(content='```'+'Facts List:\n\n'+'\n'.join(actual[(page-1)*10:page*10])+f'\n\npage {page}/{size}'+'```')
+                            
+                        except asyncio.TimeoutError:
+                            await show.edit(content='Timeout, facts closed uwu')
+                            break
                 else:
                     await ctx.send('```'+"Why are you gay?"+'```')
             elif args[0]=='add':
                 msg=' '.join(args[1:])
-                await a.edit(content=a.content+'\n'+msg)
+                await self.db.send(msg)
                 await ctx.send("```yaml\nfact added: "+msg+"\nby: "+str(ctx.message.author)+"```")
-            elif args[0]=='remove':
-                try:
-                    if int(args[1])==0:
-                        await ctx.send("```Enter valid index pls```")
-                    else:
-                        msgs=[i for i in a.content.split('\n')]
-                        await ctx.send("```yaml\nfact removed: "+msgs.pop(int(args[1]))+"\nby: "+str(ctx.message.author)+"```")
-                        await a.edit(content='\n'.join(msgs))
-                except IndexError:
-                    await ctx.send('Enter valid index pls')
-            elif args[0]=='clean':
-                try:
-                    msgs=[i for i in a.content.split('\n')]
-                    del msgs[int(args[1]):int(args[2])+1]
-                    await a.edit(content='\n'.join(msgs))
-                    await ctx.send("```yaml\nfacts cleaned by: "+str(ctx.message.author)+"```")
-                except IndexError:
-                    await ctx.send('Enter valid index range pls')
+            elif args[0]=='fill':
+                with open('backup.txt','r') as f:
+                    for i in f.readlines():
+                        await self.db.send(' '.join(i.split()[1:]))
             else:
                 await ctx.send('Error, you suck at typing kiddo, '+str(ctx.message.author))
         else:
             await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\nfact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
-        
+    
+  
     @commands.command(aliases=['UwU', 'uwu', 'owo','OWO','UWU'],help="Made for the weebs")
     async def OwO(self,ctx,*args):
         a="""OwO 
@@ -137,7 +150,7 @@ class Chats(Cog):
         if args:
             if args[0]=='c':
                 await ctx.message.delete()
-        await ctx.send(random.choice(a))     
+        await ctx.send(random.choice(a))  
 
     @facts.error
     async def cool_dude(self,ctx, error):
