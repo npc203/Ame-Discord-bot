@@ -152,6 +152,12 @@ class Chats(Cog):
                 await ctx.message.delete()
         await ctx.send(random.choice(a))  
 
+    @commands.command(aliases=['dog', 'cat',"truth"],help="hahaha",hidden=True)
+    async def suprise(self,ctx,*args):
+        
+        l=("https://youtu.be/INbRpclIFsE","https://youtu.be/s0akG-V_Y30","https://youtu.be/j5a0jTc9S10")
+        await ctx.message.delete()
+        await ctx.send("Requested by: "+str(ctx.message.author)+"\n"+random.choice(l)) 
     @facts.error
     async def cool_dude(self,ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
