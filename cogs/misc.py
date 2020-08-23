@@ -64,6 +64,27 @@ class Miscellaneous(Cog):
                     await ctx.send(' '.join(args[:-1]))
         else:
             await ctx.send("***There was an attempt***")
+    
+    @commands.cooldown(1, 20, commands.BucketType.user)
+    @commands.command(help="Show's your avatar")
+    async def avatar(self,ctx,*args):
+        embed = discord.Embed(colour=discord.Colour.blue())
+        if (ctx.message.mentions.__len__()>0):
+            embed.set_image(url=ctx.message.mentions[0].avatar_url)
+            embed.set_footer(text=ctx.message.mentions[0].display_name+" senpai looks cool! UwU")
+        else:
+            embed.set_image(url=ctx.message.author.avatar_url)
+            embed.set_footer(text="You look nice senpai! UwU")
+        await ctx.send(embed=embed)
+    
+    @avatar.error
+    async def cool_dude(self,ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(error.retry_after)
+            await ctx.send(msg)
+        else:
+            raise error 
+
         
 
     
