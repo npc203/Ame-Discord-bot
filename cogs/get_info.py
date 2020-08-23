@@ -36,8 +36,14 @@ class Information(Cog):
     async def ping(self,ctx):
         page = requests.get(self.URL,headers=self.headers)
         soup = BeautifulSoup(page.content, 'html.parser')
-        await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
-
+        embed = discord.Embed(title='EmeraldBattleCraft',url='https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/',colour=discord.Colour.purple())
+        #embed.set_author(name="EmeraldBattleCraft")
+        embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
+        embed.set_footer(text="Warning: This isn't realtime!, The info is taken from the website.")
+        embed.add_field(name='Members Online: ',value=soup.find("table").find(class_='stat').text,inline=False)
+        embed.add_field(name='Players:',value=','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")]),inline=False)
+        #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
+        await ctx.send(embed=embed)
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Get's a random joke")
     async def joke(self,ctx):
