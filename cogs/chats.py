@@ -4,6 +4,7 @@ from discord.ext.commands import Cog
 import random
 import asyncio
 class Chats(Cog):
+    """Weeby commands"""
     def __init__(self, bot):
         self.owo="""OwO 
                     Owo
@@ -186,21 +187,21 @@ class Chats(Cog):
                     (╯✿◕益◕）╯︵ ┻━┻""".split("\n")
 
         
-    @commands.command(aliases=['uWu', 'uwu','UWU'],help="Made for the weebs")
+    @commands.command(aliases=['uWu', 'uwu','UWU'],help="Replies with OwO")
     async def UwU(self,ctx,*args):
         if args:
             if args[0]=='c':
                 await ctx.message.delete()
         await ctx.send(random.choice(self.owo))  
 
-    @commands.command(aliases=['oWo', 'owo','OWO'])
+    @commands.command(aliases=['oWo', 'owo','OWO'],help='Replies with UwU')
     async def OwO(self,ctx,*args):
         if args:
             if args[0]=='c':
                 await ctx.message.delete()
         await ctx.send(random.choice(self.uwu))  
 
-    @commands.command()
+    @commands.command(help='Replies with flower girl/yandere girl')
     async def xwx(self,ctx,*args):
         if args:
             if args[0]=='c':

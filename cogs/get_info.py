@@ -25,7 +25,7 @@ def specific_page(string):
         p = wikipedia.page(s).summary
     return p
 
-class Information(Cog):
+class Info(Cog):
     """Getting stuff from the Internet"""
     def __init__(self):
         self.headers = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
@@ -84,4 +84,4 @@ class Information(Cog):
             raise error
 
 def setup(bot):
-    bot.add_cog(Information())
+    bot.add_cog(Info())

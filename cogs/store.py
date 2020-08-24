@@ -3,7 +3,8 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 import random
 import asyncio
-class Facts(Cog):
+class Fun(Cog):
+    """Has a bunch of fun commands"""
     def __init__(self, bot):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
@@ -16,7 +17,7 @@ class Facts(Cog):
         self.db = self.bot.get_channel(743058819545956384)
     
     @commands.cooldown(1, 7, commands.BucketType.user)
-    @commands.command(help='facts module:\n1.add\n2.list\n4.no argument = random fact')
+    @commands.command(help='1.add\n2.list\n3.no argument = random fact')
     async def facts(self,ctx,*args):   
         self.db = self.bot.get_channel(743058819545956384)
         try:
@@ -70,8 +71,21 @@ class Facts(Cog):
         except IndexError:
             await ctx.send("Database error")
         await ctx.send(("Requested by: "+str(ctx.message.author)+"\n"+random.choice([i.content for i in a])))
+    
+    @commands.cooldown(1, 20, commands.BucketType.user)
+    @commands.command(help="Show's your avatar")
+    async def avatar(self,ctx,*args):
+        embed = discord.Embed(colour=discord.Colour.blue())
+        if (ctx.message.mentions.__len__()>0):
+            embed.set_image(url=ctx.message.mentions[0].avatar_url)
+            embed.set_footer(text=ctx.message.mentions[0].display_name+" senpai looks cool! UwU")
+        else:
+            embed.set_image(url=ctx.message.author.avatar_url)
+            embed.set_footer(text="You look nice senpai! UwU")
+        await ctx.send(embed=embed)
 
     @facts.error
+    @avatar.error
     async def cool_dude(self,ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(error.retry_after)
@@ -80,4 +94,4 @@ class Facts(Cog):
             raise error       
 
 def setup(bot):
-    bot.add_cog(Facts(bot))
+    bot.add_cog(Fun(bot))

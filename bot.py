@@ -13,9 +13,17 @@ async def on_ready():
     print("ready")
 @client.event
 async def on_command(ctx):
-    await client.get_channel(743038667362140262).send(str(datetime.datetime.now())+','+str(ctx.command)+','+str(ctx.guild)+','+str(ctx.channel)+','+str(ctx.message.author)+'\n')
+    await client.get_channel(743038667362140262).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.guild)+','+str(ctx.channel)+','+str(ctx.message.author)+'\n')
     #print(ctx.command,ctx.guild,ctx.channel,ctx.message.author)
 
+@client.event
+async def on_command_error(ctx,err):
+    print(err)
+    if isinstance(err,commands.CommandNotFound):
+        await ctx.send("```You either suck at typing or the command doesn't exist```")
+    await client.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+type(err).__name__)
+
+'''
 @client.command()
 async def help(ctx):
     embed=discord.Embed(colour=discord.Colour.orange())
@@ -24,6 +32,8 @@ async def help(ctx):
     embed.add_field(name='Chats',value="uwu,owo,xwx",inline=True)
     embed.add_field(name='Under construction',value="gomenasai",inline=False)
     await ctx.send(embed=embed)
+'''
+
 with open('token.txt','r') as f:
     token=f.read()
 client.run(token)
