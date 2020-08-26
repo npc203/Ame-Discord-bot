@@ -5,9 +5,7 @@ import wikipedia
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random,json
-from joke.jokes import *
-from joke.quotes import *
+import random,json,datetime
 
 def random_page():
    random = wikipedia.random(1)
@@ -27,9 +25,10 @@ def specific_page(string):
 
 class Info(Cog):
     """Getting stuff from the Internet"""
-    def __init__(self):
+    def __init__(self,bot):
         self.headers = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
         self.URL = 'https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/'
+        self.bot=bot
         
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Get's the player count in EBC")
@@ -40,11 +39,14 @@ class Info(Cog):
         #embed.set_author(name="EmeraldBattleCraft")
         embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
         embed.set_footer(text="Warning: This isn't realtime!, The info is taken from the website.")
-        embed.add_field(name='Members Online: ',value=soup.find("table").find(class_='stat').text,inline=False)
+       
         try:
+            embed.add_field(name='Members Online: ',value=soup.find("table").find(class_='stat').text,inline=False)
             embed.add_field(name='Players:',value=','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")]),inline=False)
-        except:
+        except Exception as e:
+            embed.add_field(name='Members Online: ',value='0/20',inline=False)
             embed.add_field(name='Players:',value='No one here :(',inline=False)
+            await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")      
         await ctx.send(embed=embed)
         #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
@@ -84,4 +86,4 @@ class Info(Cog):
             raise error
 
 def setup(bot):
-    bot.add_cog(Info())
+    bot.add_cog(Info(bot))
