@@ -16,7 +16,7 @@ class Fun(Cog):
         self.links = self.bot.get_channel(747063339447877753)
         self.db = self.bot.get_channel(743058819545956384)
     
-    @commands.cooldown(1, 7, commands.BucketType.user)
+    #@commands.cooldown(1, 7, commands.BucketType.user)
     @commands.command(help='1.add\n2.list\n3.no argument = random fact')
     async def facts(self,ctx,*args):   
         self.db = self.bot.get_channel(743058819545956384)
@@ -84,7 +84,7 @@ class Fun(Cog):
             embed.set_footer(text="You look nice senpai! UwU")
         await ctx.send(embed=embed)
 
-    @facts.error
+    #@facts.error
     @avatar.error
     async def cool_dude(self,ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
