@@ -29,6 +29,9 @@ class Info(Cog):
         self.headers = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
         self.URL = 'https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/'
         self.bot=bot
+        with open('data/quotes.json') as f:
+            self.quotes = json.load(f)
+        
         
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Get's the player count in EBC")
@@ -61,12 +64,8 @@ class Info(Cog):
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Get's a random quote/big brain from the internet")
     async def quote(self,ctx):
-        a=random.choice([stormconsultancy, quotesondesign])
-        #print("getting stuff from:"+str(a))
-        if a==quotesondesign:
-            await  ctx.send(unescape(random.choice(a(1))).replace('<p>','').replace('</p>',''))
-        else:
-             await  ctx.send(unescape(a()))
+        tell = random.choice(self.quotes)
+        await ctx.send('```'+tell['quote']+'\nby:'+tell['author']+'```')
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help='Throws random wiki articles \n if argument is given, tries to get the specified page \n [Very unreliable] ')
@@ -87,18 +86,6 @@ class Info(Cog):
             embed.set_image(url=ctx.message.author.avatar_url)
             embed.set_footer(text="You look nice senpai! UwU")
         await ctx.send(embed=embed)
-    
-    @wiki.error
-    @ping.error
-    @avatar.error
-    @joke.error
-    @quote.error
-    async def cool_dude(self,ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(error.retry_after)
-            await ctx.send(msg)
-        else:
-            raise error
 
 def setup(bot):
     bot.add_cog(Info(bot))

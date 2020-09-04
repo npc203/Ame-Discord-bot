@@ -40,12 +40,13 @@ class Chats(Cog):
         await ctx.send(random.choice(self.xwx))
 
     @commands.command(help='Says Stuff for the user:\n1. --say insult\n1. --say sadme',aliases=['s'])
-    async def say(self,ctx,word):
+    async def say(self,ctx,word,*args):
+        if args and args[0]=='c':
+            await ctx.message.delete()
         if word not in self.words:
             await ctx.send("```Not the right argument```")
             return
         else:
-            await ctx.message.delete()
             hooks = await ctx.channel.webhooks()
             if hooks:
                 hook = hooks[0]
@@ -55,6 +56,7 @@ class Chats(Cog):
             await hook.send(username=ctx.message.author.display_name,avatar_url=ctx.message.author.avatar_url,content=self.helper(word))
     
     def helper(self,word):
+        """returns a random choice"""
         if word not in self.words:
             raise "Not a correct word"
         if not word in self.cache:

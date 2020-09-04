@@ -18,9 +18,11 @@ async def on_command(ctx):
 
 @client.event
 async def on_command_error(ctx,err):
-    print(err)
     if isinstance(err,commands.CommandNotFound):
         await ctx.send("```You either suck at typing or the command doesn't exist```")
+    elif isinstance(err, commands.CommandOnCooldown):
+            msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(err.retry_after)
+            await ctx.send(msg)
     await client.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+type(err).__name__)
 
 '''
