@@ -55,13 +55,13 @@ class Info(Cog):
         
         #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random joke")
     async def joke(self,ctx):
         r=json.loads(requests.get("https://official-joke-api.appspot.com/random_joke").text)
         await  ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
 
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random quote/big brain from the internet")
     async def quote(self,ctx):
         tell = random.choice(self.quotes)
