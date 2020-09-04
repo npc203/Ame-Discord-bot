@@ -39,15 +39,17 @@ class Info(Cog):
         #embed.set_author(name="EmeraldBattleCraft")
         embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
         embed.set_footer(text="Warning: This isn't realtime!, The info is taken from the website.")
+        table=soup.find("table")
        
         try:
-            embed.add_field(name='Members Online: ',value=soup.find("table").find(class_='stat').text,inline=False)
+            embed.add_field(name='Members Online: ',value=table.find(class_='stat').text,inline=False)
             embed.add_field(name='Players:',value=','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")]),inline=False)
+            await ctx.send(embed=embed)
         except Exception as e:
             embed.add_field(name='Members Online: ',value='0/20',inline=False)
             embed.add_field(name='Players:',value='No one here :(',inline=False)
             await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")      
-        await ctx.send(embed=embed)
+        
         #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -74,8 +76,21 @@ class Info(Cog):
         else:
             await ctx.send(specific_page(' '.join(arg)))
     
+    @commands.cooldown(1, 20, commands.BucketType.user)
+    @commands.command(help="Show's your avatar")
+    async def avatar(self,ctx,*args):
+        embed = discord.Embed(colour=discord.Colour.blue())
+        if (ctx.message.mentions.__len__()>0):
+            embed.set_image(url=ctx.message.mentions[0].avatar_url)
+            embed.set_footer(text=ctx.message.mentions[0].display_name+" senpai looks cool! UwU")
+        else:
+            embed.set_image(url=ctx.message.author.avatar_url)
+            embed.set_footer(text="You look nice senpai! UwU")
+        await ctx.send(embed=embed)
+    
     @wiki.error
     @ping.error
+    @avatar.error
     @joke.error
     @quote.error
     async def cool_dude(self,ctx, error):
