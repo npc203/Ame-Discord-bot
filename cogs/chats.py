@@ -58,7 +58,7 @@ class Chats(Cog):
         if word not in self.words:
             raise "Not a correct word"
         if not word in self.cache:
-                with open(f'data/{word}.txt','r') as f:
+                with open(f'data/{word}.txt','r',encoding="cp1252") as f:
                     self.cache[word]=f.readlines()
         return random.choice(self.cache[word])
 
