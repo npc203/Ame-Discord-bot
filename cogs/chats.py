@@ -39,7 +39,7 @@ class Chats(Cog):
                 await ctx.message.delete()
         await ctx.send(random.choice(self.xwx))
 
-    @commands.command(help='Says Stuff for the user:\n1. --say insult\n1. --say sadme',aliases=['s'])
+    @commands.command(help='Says Stuff for the user:\n --say insult\n --say sadme',aliases=['s'])
     async def say(self,ctx,word,*args):
         if args and args[0]=='c':
             await ctx.message.delete()
