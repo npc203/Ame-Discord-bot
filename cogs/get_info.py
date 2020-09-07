@@ -31,7 +31,7 @@ class Info(Cog):
         self.bot=bot
         with open('data/quotes.json') as f:
             self.quotes = json.load(f)
-        with open('data/love.txt','r') as f:
+        with open('data/love.txt','r',encoding="utf8") as f:
             self.love = f.readlines() 
         
         
@@ -64,7 +64,7 @@ class Info(Cog):
         await  ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command(help="Get's a random quote/big brain from the internet")
+    @commands.command(help="Get's a random quote/big brain from the internet\n --quote love gives love quotes (probably)")
     async def quote(self,ctx,*args):
         if not args:
             tell = random.choice(self.quotes)
