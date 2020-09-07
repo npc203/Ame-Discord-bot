@@ -31,6 +31,8 @@ class Info(Cog):
         self.bot=bot
         with open('data/quotes.json') as f:
             self.quotes = json.load(f)
+        with open('data/love.txt','r') as f:
+            self.love = f.readlines() 
         
         
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -63,9 +65,12 @@ class Info(Cog):
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random quote/big brain from the internet")
-    async def quote(self,ctx):
-        tell = random.choice(self.quotes)
-        await ctx.send('```'+tell['quote']+'\nby:'+tell['author']+'```')
+    async def quote(self,ctx,*args):
+        if not args:
+            tell = random.choice(self.quotes)
+            await ctx.send('```'+tell['quote']+'\nby:'+tell['author']+'```')
+        elif args[0]=='love':
+            await ctx.send('```'+random.choice(self.love)+'```')
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help='Throws random wiki articles \n if argument is given, tries to get the specified page \n [Very unreliable] ')
