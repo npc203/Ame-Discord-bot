@@ -19,7 +19,7 @@ class Fun(Cog):
     #@commands.cooldown(1, 7, commands.BucketType.user)
     @commands.command(help='1.add\n2.list\n3.no argument = random fact')
     async def facts(self,ctx,*args):   
-        self.db = self.bot.get_channel(743058819545956384)
+        self.db = self.bot.get_channel(755361612029755472)
         try:
             a=(await self.db.history(limit=500).flatten())
             size = len(a)//10+1
