@@ -14,7 +14,7 @@ class Fun(Cog):
         #this stuff is expected to work but it aint working, PLS DO SOMETHING, its not an async error
         #the fix i did was...call the self.links again in their respective call functions (adds stress on computation)
         self.links = self.bot.get_channel(747063339447877753)
-        self.db = self.bot.get_channel(743058819545956384)
+        self.db = self.bot.get_channel(755361612029755472)
     
     #@commands.cooldown(1, 7, commands.BucketType.user)
     @commands.command(help='1.add\n2.list\n3.no argument = random fact')
