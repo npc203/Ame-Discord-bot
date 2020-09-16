@@ -9,7 +9,7 @@ class Admin(Cog):
         self.limit=50
         self.bot = bot
     @commands.command(help='Meant for Pinging the given name on every available text channel \n only epic people can use it')
-    async def punish(self,ctx,name,times):
+    async def punish(self,ctx,name,times:int):
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
                 await ctx.message.delete()
                 if times>self.limit:
