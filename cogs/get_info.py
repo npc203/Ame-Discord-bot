@@ -101,7 +101,7 @@ class Info(Cog):
             full = discord.Embed(title='Help',url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description='Use `--help <command>` to find out more about them!',colour=discord.Colour.green())
             cogs_desc = ''
             for x in self.bot.cogs:
-                cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands()])+'\n'))
+                cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands() if not cmd.hidden])+'\n'))
             full.add_field(name="Categories:",value=cogs_desc,inline=False)
             full.set_footer(text='Tip: you can also use --info <category>')
             await ctx.send('',embed=full)
@@ -135,7 +135,7 @@ class Info(Cog):
                     if not c.hidden:
                         #print(c.name,c.help)
                         specific_cog.add_field(name=f"{count}."+c.name,value=c.help,inline=False)
-                    count+=1
+                        count+=1
                 specific_cog.set_footer(text='Tip: You can use --help <command> for more info')
         await ctx.send(embed=specific_cog)
 
