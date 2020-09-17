@@ -20,6 +20,7 @@ class Fun(Cog):
                 temp=[int(i) for i in i.content.split(',')]
                 self.serverinfo[self.bot.get_guild(temp[0])]=(self.bot.get_channel(temp[1]),int(temp[2]))
                 time.sleep(0.5)
+            print(self.serverinfo)
             await ctx.send("Automate this pls :(")
         else:
             await ctx.send("You aren't *high* enough")
@@ -27,15 +28,17 @@ class Fun(Cog):
     @commands.command(help='Use this to assign the facts channel')
     async def assign(self,ctx):
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
+            await ctx.message.delete()
             if ctx.message.guild in self.serverinfo:
                 channel = self.bot.get_channel(755839409768759487)
                 msg = await channel.fetch_message(self.serverinfo[ctx.message.guild][1])
                 await msg.edit(content=str(ctx.message.guild.id)+','+str(ctx.message.channel.id)+','+str(msg.id))
-                self.serverinfo[ctx.message.guild]=ctx.message.channel
+                self.serverinfo[ctx.message.guild]=(ctx.message.channel,msg.id)
             else:
                 sent = await self.db.send(str(ctx.message.guild.id)+','+str(ctx.message.channel.id))
                 await sent.edit(content=sent.content+','+str(sent.id))
                 self.serverinfo[ctx.message.guild]=(ctx.message.channel,sent.id)
+            print(self.serverinfo)
             await ctx.send('Successfully assigned this text channel as the Facts channel, pls delete this message')
         else:
             await ctx.send('Senpai!,you need to be high enough OwO.')

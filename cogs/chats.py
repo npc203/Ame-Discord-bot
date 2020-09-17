@@ -54,6 +54,15 @@ class Chats(Cog):
                 hook = await ctx.channel.create_webhook(name='bot_hook_'+str(ctx.channel))
             
             await hook.send(username=ctx.message.author.display_name,avatar_url=ctx.message.author.avatar_url,content=self.helper(word))
+    @commands.command(help='Tells whatever is given as the sentence, mimicing user\'s identity and name',aliases=['t'])
+    async def tell(self,ctx,*sentence):
+        await ctx.message.delete()
+        hooks = await ctx.channel.webhooks()
+        if hooks:
+            hook = hooks[0]
+        else:
+            hook = await ctx.channel.create_webhook(name='bot_hook_'+str(ctx.channel)) 
+        await hook.send(username=ctx.message.author.display_name,avatar_url=ctx.message.author.avatar_url,content=' '.join(sentence))
     
     def helper(self,word):
         """returns a random choice"""
