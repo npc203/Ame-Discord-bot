@@ -9,7 +9,11 @@ class Admin(Cog):
         self.limit=50
         self.bot = bot
     @commands.command(help='Meant for Pinging the given name on every available text channel \n only epic people can use it')
-    async def punish(self,ctx,name,times:int):
+    async def punish(self,ctx,name,times):
+        try:
+            times=int(times)
+        except ValueError:
+            ctx.send("Senpai, U need to give the command in the format `--punish <mention person> <number of times>` OwO")
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
                 await ctx.message.delete()
                 if times>self.limit:
@@ -114,48 +118,6 @@ class Admin(Cog):
             print(e)
             await ctx.send("Excuse me, I can't send embeds.")
     '''
-    @commands.command(help='Shows the help command')
-    async def help(self,ctx,*cog):
-        # *cog indicates cog or a command
-        if not cog:
-            full = discord.Embed(title='Help',url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description='Use `--help <command>` to find out more about them!',colour=discord.Colour.green())
-            cogs_desc = ''
-            for x in self.bot.cogs:
-                cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands()])+'\n'))
-            full.add_field(name="Categories:",value=cogs_desc,inline=False)
-            full.set_footer(text='Tip: you can also use --info <category>')
-            await ctx.send('',embed=full)
-        else:
-            command = self.bot.get_command(cog[0])
-            if command is None:
-                cmd_embed = discord.Embed(title='Error!',description='Gomenasai, given command doesn\'t exist : "'+cog[0]+'"',color=discord.Color.red())
-            else:
-                cmd_embed = discord.Embed(title=cog[0],url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=command.help,colour=discord.Colour.green())
-                if command.aliases:
-                    cmd_embed.set_footer(text='aliases: {}'.format(', '.join(command.aliases)))
-                else:
-                    cmd_embed.set_footer(text='aliases: None')
-            await ctx.send(embed=cmd_embed)
-    
-    @commands.command(help='Gets info about a Specific Category')
-    async def info(self,ctx,*args):
-        if not args:
-            specific_cog = discord.Embed(title='Error!',description='Gomenasai, Senpai needs to type something',color=discord.Color.red())
-        else:
-            cog = self.bot.get_cog(args[0])
-            if cog is None:
-                specific_cog = discord.Embed(title='Error!',description='Gomenasai, given Category doesn\'t exist :"'+args[0]+'"',color=discord.Color.red())
-            else:
-                specific_cog = discord.Embed(title=cog.qualified_name,url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=cog.__doc__,colour=discord.Colour.green())
-                #print(cog, type(cog), cog.get_commands())
-                count=1
-                for c in cog.get_commands():
-                    if not c.hidden:
-                        #print(c.name,c.help)
-                        specific_cog.add_field(name=f"{count}."+c.name,value=c.help,inline=False)
-                    count+=1
-                specific_cog.set_footer(text='Tip: You can use --help <command> for more info')
-        await ctx.send(embed=specific_cog)
 
 def setup(bot):
     bot.add_cog(Admin(bot))

@@ -1,72 +1,94 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random
+import random,time
 import asyncio
 class Fun(Cog):
     """Has a bunch of fun commands"""
     def __init__(self, bot):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
-        self.setup()
+        
+    @commands.command(hidden=True)
+    async def setup(self,ctx):
+        #Automate this command
+        if str(ctx.message.author) == 'epic guy#0715':
+            self.links = self.bot.get_channel(747063339447877753)
+            self.db = self.bot.get_channel(755839409768759487)
+            self.serverinfo = {}
+            for i in await self.db.history(limit=100).flatten():
+                temp=[int(i) for i in i.content.split(',')]
+                self.serverinfo[self.bot.get_guild(temp[0])]=(self.bot.get_channel(temp[1]),int(temp[2]))
+                time.sleep(0.5)
+            await ctx.send("Automate this pls :(")
+        else:
+            await ctx.send("You aren't *high* enough")
     
-    def setup(self):
-        #this stuff is expected to work but it aint working, PLS DO SOMETHING, its not an async error
-        #the fix i did was...call the self.links again in their respective call functions (adds stress on computation)
-        self.links = self.bot.get_channel(747063339447877753)
-        self.db = self.bot.get_channel(755361612029755472)
-    
+    @commands.command(help='Use this to assign the facts channel')
+    async def assign(self,ctx):
+        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
+            if ctx.message.guild in self.serverinfo:
+                await self.bot.fetch_message(self.serverinfo[ctx.message.guild][1]).edit(content=str(ctx.message.guild.id)+','+str(ctx.message.channel.id)+','+str(ctx.message.id))
+            else:
+                sent = await self.db.send(str(ctx.message.guild.id)+','+str(ctx.message.channel.id))
+                await sent.edit(content=sent.content+','+str(sent.id))
+                self.serverinfo[ctx.message.guild]=(ctx.message.channel,sent.id)
+            await ctx.send('Successfully assigned this text channel as the Facts channel, pls delete this message')
+        else:
+            await ctx.send('Senpai!,you need to be high enough OwO.')
+
     #@commands.cooldown(1, 7, commands.BucketType.user)
     @commands.command(help='1.add\n2.list\n3.no argument = random fact')
     async def facts(self,ctx,*args):   
-        self.db = self.bot.get_channel(755361612029755472)
-        try:
-            a=(await self.db.history(limit=500).flatten())
-            size = len(a)//10+1
-        except IndexError:
-            await ctx.send("Database error")    
-        if not args:
-            await ctx.send('```'+random.choice([i.content for i in a])+'```')
-        elif len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            await ctx.message.delete() 
-            def check(reaction, user):
-                #return str(reaction.emoji) in ['⬅️', '➡️']
-                return user == ctx.message.author and str(reaction.emoji) in ['⬅️', '➡️']  
-            if args[0]=='list':       
-                page= 1
-                actual=[str(i)+'. '+a for i,a in enumerate([i.content for i in a],1)]
-                show = await ctx.send('```'+'Facts List:\n\n'+'\n'.join(actual[:10])+f'\n\n\npage {page}/{size}'+'```')
-                await show.add_reaction( '⬅️')
-                await show.add_reaction('➡️')                  
-                while True:
-                    try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
-                        #print(reaction.emoji)
-                        if reaction.emoji == '⬅️' and page-1>0:
-                            page -= 1
-                        elif reaction.emoji == '➡️' and page+1<=size:
-                            page += 1
-                        await show.edit(content='```'+'Facts List:\n\n'+'\n'.join(actual[(page-1)*10:page*10])+f'\n\npage {page}/{size}'+'```')
-                        
-                    except asyncio.TimeoutError:
-                        await show.edit(content='Timeout, facts closed uwu')
-                        break
-                else:
-                    await ctx.send('```'+"Why are you gay?"+'```')
-            elif args[0]=='add':
-                msg=' '.join(args[1:])
-                await self.db.send(msg)
-                await ctx.send("```yaml\nfact added: "+msg+"\nby: "+str(ctx.message.author)+"```")
-            else:
-                await ctx.send('Error, you suck at typing kiddo, '+str(ctx.message.author))
+        if ctx.message.guild not in self.serverinfo:
+            await ctx.send('Please create a new channel.||Preferrable hidden from everyone except staff and the bot|| and use the --assign command to assign the facts channel.')
         else:
-            await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\nfact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
+            try:
+                a=(await self.serverinfo[ctx.message.guild][0].history(limit=300).flatten())
+                size = len(a)//10+1
+            except IndexError:
+                await ctx.send("Database error")    
+            if not args:
+                await ctx.send('```'+random.choice([i.content for i in a])+'```')
+            elif len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
+                await ctx.message.delete() 
+                def check(reaction, user):
+                    #return str(reaction.emoji) in ['⬅️', '➡️']
+                    return user == ctx.message.author and str(reaction.emoji) in ['⬅️', '➡️']  
+                if args[0]=='list':       
+                    page= 1
+                    actual=[str(i)+'. '+a for i,a in enumerate([i.content for i in a],1)]
+                    show = await ctx.send('```'+'Facts List:\n\n'+'\n'.join(actual[:10])+f'\n\n\npage {page}/{size}'+'```')
+                    await show.add_reaction( '⬅️')
+                    await show.add_reaction('➡️')                  
+                    while True:
+                        try:
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
+                            #print(reaction.emoji)
+                            if reaction.emoji == '⬅️' and page-1>0:
+                                page -= 1
+                            elif reaction.emoji == '➡️' and page+1<=size:
+                                page += 1
+                            await show.edit(content='```'+'Facts List:\n\n'+'\n'.join(actual[(page-1)*10:page*10])+f'\n\npage {page}/{size}'+'```')
+                            
+                        except asyncio.TimeoutError:
+                            await show.edit(content='Timeout, Fact List is closed uwu')
+                            break
+                    else:
+                        await ctx.send('```'+"Why are you gay?"+'```')
+                elif args[0]=='add':
+                    msg=' '.join(args[1:])
+                    await self.serverinfo[ctx.message.guild][0].send(msg)
+                    await ctx.send("```yaml\nfact added: "+msg+"\nby: "+str(ctx.message.author)+"```")
+                else:
+                    await ctx.send('Error, you suck at typing kiddo, '+str(ctx.message.author))
+            else:
+                await ctx.send('```yaml\nSIKE, Not enough permissions NOOB\nfact failed to add/manipulate: '+' '.join(args[1:])+"\nby: "+str(ctx.message.author)+'```')
 
     @commands.command(aliases=['dog', 'cat',"truth"],hidden=True)
     async def surprise(self,ctx,*args):
         await ctx.message.delete()
         try:
-            self.links = self.bot.get_channel(747063339447877753)
             a=(await self.links.history(limit=50).flatten())
         except IndexError:
             await ctx.send("Database error")

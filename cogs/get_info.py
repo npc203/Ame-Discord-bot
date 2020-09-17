@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 import random,json,datetime
+import inspect
 
 def random_page():
    random = wikipedia.random(1)
@@ -53,7 +54,8 @@ class Info(Cog):
         except Exception as e:
             embed.add_field(name='Members Online: ',value='0/20',inline=False)
             embed.add_field(name='Players:',value='No one here :(',inline=False)
-            await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")      
+            await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")
+            await ctx.send(embed=embed)      
         
         #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
@@ -91,6 +93,51 @@ class Info(Cog):
             embed.set_image(url=ctx.message.author.avatar_url)
             embed.set_footer(text="You look nice senpai! UwU")
         await ctx.send(embed=embed)
+        
+    @commands.command(help='Shows the help command')
+    async def help(self,ctx,*cog):
+        # *cog indicates cog or a command
+        if not cog:
+            full = discord.Embed(title='Help',url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description='Use `--help <command>` to find out more about them!',colour=discord.Colour.green())
+            cogs_desc = ''
+            for x in self.bot.cogs:
+                cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands()])+'\n'))
+            full.add_field(name="Categories:",value=cogs_desc,inline=False)
+            full.set_footer(text='Tip: you can also use --info <category>')
+            await ctx.send('',embed=full)
+        else:
+            command = self.bot.get_command(cog[0])
+            if command is None:
+                cmd_embed = discord.Embed(title='Error!',description='Gomenasai, given command doesn\'t exist : "'+cog[0]+'"',color=discord.Color.red())
+            else:
+                usage='--'+str(command)+' '+' '.join([f'<{i[1]}>' for i in list(command.params.items())[2:]])
+                cmd_embed = discord.Embed(title=cog[0],url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=f'**Usage:** {usage}',colour=discord.Colour.green())
+                cmd_embed.add_field(name='Description:',value=command.help)
+                if command.aliases:
+                    cmd_embed.set_footer(text='aliases: {}'.format(', '.join(command.aliases)))
+                else:
+                    cmd_embed.set_footer(text='aliases: None')
+            await ctx.send(embed=cmd_embed)
+    
+    @commands.command(help='Gets info about a Specific Category')
+    async def info(self,ctx,*args):
+        if not args:
+            specific_cog = discord.Embed(title='Error!',description='Gomenasai, Senpai needs to type something',color=discord.Color.red())
+        else:
+            cog = self.bot.get_cog(args[0])
+            if cog is None:
+                specific_cog = discord.Embed(title='Error!',description='Gomenasai, given Category doesn\'t exist :"'+args[0]+'"',color=discord.Color.red())
+            else:
+                specific_cog = discord.Embed(title=cog.qualified_name,url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=cog.__doc__,colour=discord.Colour.green())
+                #print(cog, type(cog), cog.get_commands())
+                count=1
+                for c in cog.get_commands():
+                    if not c.hidden:
+                        #print(c.name,c.help)
+                        specific_cog.add_field(name=f"{count}."+c.name,value=c.help,inline=False)
+                    count+=1
+                specific_cog.set_footer(text='Tip: You can use --help <command> for more info')
+        await ctx.send(embed=specific_cog)
 
 def setup(bot):
     bot.add_cog(Info(bot))
