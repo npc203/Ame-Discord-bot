@@ -16,6 +16,7 @@ async def on_command(ctx):
     await client.get_channel(743038667362140262).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.guild)+','+str(ctx.channel)+','+str(ctx.message.author)+'\n')
     #print(ctx.command,ctx.guild,ctx.channel,ctx.message.author)
 
+
 @client.event
 async def on_command_error(ctx,err):
     if isinstance(err,commands.CommandNotFound):

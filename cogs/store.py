@@ -28,7 +28,10 @@ class Fun(Cog):
     async def assign(self,ctx):
         if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
             if ctx.message.guild in self.serverinfo:
-                await self.bot.fetch_message(self.serverinfo[ctx.message.guild][1]).edit(content=str(ctx.message.guild.id)+','+str(ctx.message.channel.id)+','+str(ctx.message.id))
+                channel = self.bot.get_channel(755839409768759487)
+                msg = await channel.fetch_message(self.serverinfo[ctx.message.guild][1])
+                await msg.edit(content=str(ctx.message.guild.id)+','+str(ctx.message.channel.id)+','+str(msg.id))
+                self.serverinfo[ctx.message.guild]=ctx.message.channel
             else:
                 sent = await self.db.send(str(ctx.message.guild.id)+','+str(ctx.message.channel.id))
                 await sent.edit(content=sent.content+','+str(sent.id))
