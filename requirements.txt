@@ -8,6 +8,8 @@ discord==1.0.1
 discord.py==1.4.1
 idna==2.10
 multidict==4.7.6
+numpy==1.19.2
+Pillow==7.2.0
 requests==2.24.0
 soupsieve==2.0.1
 typing-extensions==3.7.4.2
