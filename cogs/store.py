@@ -99,6 +99,32 @@ class Fun(Cog):
         except IndexError:
             await ctx.send("Database error")
         await ctx.send(("Requested by: "+str(ctx.message.author)+"\n"+random.choice([i.content for i in a])))      
+    
+    @commands.command(help='Tells whatever is given as the sentence, mimicing user\'s identity and name',aliases=['t'])
+    async def tell(self,ctx,*sentence):
+        await ctx.message.delete()
+        hooks = await ctx.channel.webhooks()
+        if hooks:
+            hook = hooks[0]
+        else:
+            hook = await ctx.channel.create_webhook(name='bot_hook_'+str(ctx.channel)) 
+        await hook.send(username=ctx.message.author.display_name,avatar_url=ctx.message.author.avatar_url,content=' '.join(sentence))
+    
+    @commands.command(help='Tells whatever is given as the sentence, mimicing mentioned user\'s identity and name',aliases=['ts'])
+    async def tellas(self,ctx,mention='',*sentence):
+        if ctx.message.mentions and sentence:
+            target= ctx.message.mentions[0] 
+            if mention[3:-1]==str(target.id):
+                await ctx.message.delete()
+                hooks = await ctx.channel.webhooks()
+                if hooks:
+                    hook = hooks[0]
+                else:
+                    hook = await ctx.channel.create_webhook(name='bot_hook_'+str(ctx.channel)) 
+                await hook.send(username=target.display_name,avatar_url=target.avatar_url,content=' '.join(sentence))
+        else:
+            await ctx.send('Senpai, u need to {} baka!'.format('mention someone' if sentence else 'type something'))
+    
 
 def setup(bot):
     bot.add_cog(Fun(bot))
