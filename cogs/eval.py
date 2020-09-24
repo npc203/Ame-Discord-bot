@@ -6,13 +6,17 @@ from contextlib import redirect_stdout
 from discord.ext.commands import Cog
 import aiohttp
 from discord.ext import commands
+import discord
 
 class Eval(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.ppl = [453158855904591872]
 
     @commands.command(name='eval')
     async def _eval(self, ctx, *, body):
+        if not (ctx.author.id in self.ppl or ctx.guild.id == 726514690829713551):
+            return
         """Evaluates python code"""
         env = {
             'ctx': ctx,
@@ -21,7 +25,9 @@ class Eval(Cog):
             'author': ctx.author,
             'guild': ctx.guild,
             'message': ctx.message,
-            'source': inspect.getsource
+            'source': inspect.getsource,
+            'discord':discord,
+            'self':self
         }
 
         def cleanup_code(content):
