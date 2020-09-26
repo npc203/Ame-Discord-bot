@@ -37,27 +37,30 @@ class Info(Cog):
         
         
     @commands.cooldown(1, 15, commands.BucketType.user)
-    @commands.command(help="Get's the player count in EBC")
-    async def ping(self,ctx):
-        page = requests.get(self.URL,headers=self.headers)
-        soup = BeautifulSoup(page.content, 'html.parser')
-        embed = discord.Embed(title='EmeraldBattleCraft',url='https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/',colour=discord.Colour.purple())
-        #embed.set_author(name="EmeraldBattleCraft")
-        embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
-        embed.set_footer(text="Warning: This isn't realtime!, The info is taken from the website.")
-        table=soup.find("table")
-       
-        try:
-            embed.add_field(name='Members Online: ',value=table.find(class_='stat').text,inline=False)
-            embed.add_field(name='Players:',value=','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")]),inline=False)
-            await ctx.send(embed=embed)
-        except Exception as e:
-            embed.add_field(name='Members Online: ',value='0/20',inline=False)
-            embed.add_field(name='Players:',value='No one here :(',inline=False)
-            await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")
-            await ctx.send(embed=embed)      
+    @commands.command(help="1.Sends the bot latency,\n 2. --ping ebc : Get's the player count in EBC")
+    async def ping(self,ctx,*args):
+        if not args:
+            await ctx.send(f'Pong! In {round(self.bot.latency * 1000)}ms')
+        else:
+            page = requests.get(self.URL,headers=self.headers)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            embed = discord.Embed(title='EmeraldBattleCraft',url='https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/',colour=discord.Colour.purple())
+            #embed.set_author(name="EmeraldBattleCraft")
+            embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
+            embed.set_footer(text="Warning: This isn't realtime!, The info is taken from the website.")
+            table=soup.find("table")
         
-        #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
+            try:
+                embed.add_field(name='Members Online: ',value=table.find(class_='stat').text,inline=False)
+                embed.add_field(name='Players:',value=','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")]),inline=False)
+                await ctx.send(embed=embed)
+            except Exception as e:
+                embed.add_field(name='Members Online: ',value='0/20',inline=False)
+                embed.add_field(name='Players:',value='No one here :(',inline=False)
+                await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")
+                await ctx.send(embed=embed)      
+            
+            #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random joke")
@@ -100,7 +103,7 @@ class Info(Cog):
         if not cog:
             full = discord.Embed(title='Help',url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description='Use `--help <command>` to find out more about them!',colour=discord.Colour.green())
             cogs_desc = ''
-            for x in self.bot.cogs:
+            for x in filter(lambda x: str(x) != 'Eval', self.bot.cogs):
                 cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands() if not cmd.hidden])+'\n'))
             full.add_field(name="Categories:",value=cogs_desc,inline=False)
             full.set_footer(text='Tip: you can also use --info <category>')

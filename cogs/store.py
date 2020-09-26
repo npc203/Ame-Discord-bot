@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random,time
+import random,time,requests
 import asyncio
 class Fun(Cog):
     """Has a bunch of fun commands"""
@@ -24,6 +24,32 @@ class Fun(Cog):
             await ctx.send("Automate this pls :(")
         else:
             await ctx.send("You aren't *high* enough")
+
+    @commands.cooldown(1, 7, commands.BucketType.user) 
+    @commands.command(help="Typical random dose of internet fun \n use \"--meme v\" for meme with more details about the meme")
+    async def meme(self,ctx,*args):
+        r = requests.get("https://meme-api.herokuapp.com/gimme")
+        raw = r.json()
+        if args:
+            embed = discord.Embed(title=raw["title"], colour=discord.Colour(0x3AF528), url=raw["postLink"],
+            description="Subreddit: {}\nauthor: {} ".format(raw["subreddit"],raw["author"]))
+        else:
+            embed = discord.Embed(title=raw["title"], colour=discord.Colour(0x3AF528), url=raw["postLink"])
+        if not raw["nsfw"] or ctx.channel.is_nsfw():
+            embed.set_image(url=raw["url"])
+        else:
+            embed.add_field(name="Sorry the meme was NSFW", value="Forgive me Senpai, You can click the title to view the post tho")
+        embed.set_footer(text="Upvotes: "+str(raw["ups"]))
+        await ctx.send(embed=embed)
+    
+    @commands.command(help='invite the bot to other servers',aliases=["about"])
+    async def invite(self,ctx):
+        embed = discord.Embed(title="Ame", colour=discord.Colour(0x9b59b6), url="https://discord.com/api/oauth2/authorize?client_id=601962388006109195&permissions=537263168&scope=bot",
+         description="A Developemental bot with fun commands, with a slight touch of anime theme. Please don't abuse my poor creation UwU")
+        embed.set_thumbnail(url="https://media1.tenor.com/images/3254d98bf26b162bb4960483402918e7/tenor.gif")
+        embed.add_field(name="Invite Link", value="Click [here](https://discord.com/api/oauth2/authorize?client_id=601962388006109195&permissions=537263168&scope=bot) to add the bot to your other servers")
+        await ctx.send(embed=embed)
+
     
     @commands.command(help='Use this to assign the facts channel')
     async def assign(self,ctx):
@@ -112,6 +138,8 @@ class Fun(Cog):
     
     @commands.command(help='Tells whatever is given as the sentence, mimicing mentioned user\'s identity and name',aliases=['ts'])
     async def tellas(self,ctx,mention='',*sentence):
+        if mention[2] != '!': #If the user is in android
+            mention = '<@!'+mention[2:]
         if ctx.message.mentions and sentence:
             target= ctx.message.mentions[0] 
             if mention[3:-1]==str(target.id):
