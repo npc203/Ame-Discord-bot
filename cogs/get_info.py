@@ -37,10 +37,10 @@ class Info(Cog):
         
         
     @commands.cooldown(1, 15, commands.BucketType.user)
-    @commands.command(help="1.Sends the bot latency,\n 2. --ping ebc : Get's the player count in EBC")
+    @commands.command(help="1. --ping     : Sends the bot latency,\n 2. --ping ebc : Get's the player count in EBC")
     async def ping(self,ctx,*args):
         if not args:
-            await ctx.send(f'Pong! In {round(self.bot.latency * 1000)}ms')
+            await ctx.send(f'Pong! in `{round(self.bot.latency * 1000)}ms`')
         else:
             page = requests.get(self.URL,headers=self.headers)
             soup = BeautifulSoup(page.content, 'html.parser')
@@ -58,7 +58,8 @@ class Info(Cog):
                 embed.add_field(name='Members Online: ',value='0/20',inline=False)
                 embed.add_field(name='Players:',value='No one here :(',inline=False)
                 await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")
-                await ctx.send(embed=embed)      
+                await ctx.send(embed=embed) 
+            del soup,page,table,embed
             
             #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
@@ -67,6 +68,7 @@ class Info(Cog):
     async def joke(self,ctx):
         r=json.loads(requests.get("https://official-joke-api.appspot.com/random_joke").text)
         await  ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
+        del r
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random quote/big brain from the internet\n --quote love gives love quotes (probably)")

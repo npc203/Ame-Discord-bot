@@ -47,9 +47,10 @@ class Chats(Cog):
             await ctx.send("```Not the right argument```")
             return
         else:
-            hooks = await ctx.channel.webhooks()
-            if hooks:
-                hook = hooks[0]
+            for i in await ctx.channel.webhooks():
+                if i.user.id == self.bot.user.id:
+                    hook = i
+                    break
             else:
                 hook = await ctx.channel.create_webhook(name='bot_hook_'+str(ctx.channel))
             
