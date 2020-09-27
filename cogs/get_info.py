@@ -86,18 +86,6 @@ class Info(Cog):
             await ctx.send(random_page())
         else:
             await ctx.send(specific_page(' '.join(arg)))
-    
-    @commands.cooldown(1, 20, commands.BucketType.user)
-    @commands.command(help="Show's your avatar")
-    async def avatar(self,ctx,*args):
-        embed = discord.Embed(colour=discord.Colour.blue())
-        if (ctx.message.mentions.__len__()>0):
-            embed.set_image(url=ctx.message.mentions[0].avatar_url)
-            embed.set_footer(text=ctx.message.mentions[0].display_name+" senpai looks cool! UwU")
-        else:
-            embed.set_image(url=ctx.message.author.avatar_url)
-            embed.set_footer(text="You look nice senpai! UwU")
-        await ctx.send(embed=embed)
         
     @commands.command(help='Shows the help command')
     async def help(self,ctx,*cog):

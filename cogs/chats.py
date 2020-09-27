@@ -39,6 +39,10 @@ class Chats(Cog):
                 await ctx.message.delete()
         await ctx.send(random.choice(self.xwx))
 
+    @commands.command(help='Gives a random number within the given range')
+    async def random(self,ctx,low:int,high:int):
+        await ctx.send(random.randint(low,high))
+
     @commands.command(help='Says Stuff for the user:\n --say insult\n --say sadme',aliases=['s'])
     async def say(self,ctx,word,*args):
         if args and args[0]=='c':

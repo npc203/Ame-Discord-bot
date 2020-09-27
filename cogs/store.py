@@ -25,23 +25,6 @@ class Fun(Cog):
         else:
             await ctx.send("You aren't *high* enough")
 
-    @commands.cooldown(1, 7, commands.BucketType.user) 
-    @commands.command(help="Typical random dose of internet fun \n use \"--meme v\" for meme with more details about the meme")
-    async def meme(self,ctx,*args):
-        r = requests.get("https://meme-api.herokuapp.com/gimme")
-        raw = r.json()
-        if args:
-            embed = discord.Embed(title=raw["title"], colour=discord.Colour(0x3AF528), url=raw["postLink"],
-            description="Subreddit: {}\nauthor: {} ".format(raw["subreddit"],raw["author"]))
-        else:
-            embed = discord.Embed(title=raw["title"], colour=discord.Colour(0x3AF528), url=raw["postLink"])
-        if not raw["nsfw"] or ctx.channel.is_nsfw():
-            embed.set_image(url=raw["url"])
-        else:
-            embed.add_field(name="Sorry the meme was NSFW", value="Forgive me Senpai, You can click the title to view the post tho")
-        embed.set_footer(text="Upvotes: "+str(raw["ups"]))
-        await ctx.send(embed=embed)
-    
     @commands.command(help='invite the bot to other servers',aliases=["about"])
     async def invite(self,ctx):
         embed = discord.Embed(title="Ame", colour=discord.Colour(0x9b59b6), url="https://discord.com/api/oauth2/authorize?client_id=601962388006109195&permissions=537263168&scope=bot",
