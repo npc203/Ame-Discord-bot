@@ -19,10 +19,11 @@ python "bot.py"
 - Change the eval function access to ur name inside the cogs and change the logs,facts stuff(yea im using discord channels as my database lol!)
 - Also People with ("Admin","Owner","Co-Owner") roles can only access the admin commands
 ## Some pics:
-- About the bot
+
 ![](https://i.imgur.com/grxLMzE.png)
-- Help section
+
 ![](https://i.imgur.com/ief6Pbw.png)
-- The bot can be used to mimic other user identity
+
 ![](https://i.imgur.com/NJ1PRcv.png)
+The bot can be used to mimic other user identity too
 
