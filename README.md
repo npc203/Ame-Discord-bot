@@ -25,5 +25,6 @@ python "bot.py"
 ![](https://i.imgur.com/ief6Pbw.png)
 
 ![](https://i.imgur.com/NJ1PRcv.png)
-The bot can be used to mimic other user identity too
+
+#### *The bot can be used to mimic other user identities too*
 
