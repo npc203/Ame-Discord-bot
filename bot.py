@@ -20,7 +20,7 @@ async def on_command(ctx):
 @client.event
 async def on_command_error(ctx,err):
     if isinstance(err,commands.CommandNotFound):
-        await ctx.send("```The command doesn't exist, use --help to get all commands```")
+        pass
     elif isinstance(err, commands.CommandOnCooldown):
             msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(err.retry_after)
             await ctx.send(msg)

@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 import random,json,datetime
-import inspect
+import asyncio
 
 def random_page():
    random = wikipedia.random(1)
@@ -20,8 +20,9 @@ def specific_page(string):
     try:
         p = wikipedia.page(string).summary
     except wikipedia.DisambiguationError as e:
-        s = e.options[0]
-        p = wikipedia.page(s).summary
+        return e.options
+    except wikipedia.exceptions.PageError as e:
+        return "No Results Found Senpai, Use Google rather 😓"
     return p
 
 class Info(Cog):
@@ -81,11 +82,38 @@ class Info(Cog):
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help='Throws random wiki articles \n if argument is given, tries to get the specified page \n [Very unreliable] ')
-    async def wiki(self,ctx,*arg):
-        if not arg:
-            await ctx.send(random_page())
+    async def wiki(self,ctx,*,text):
+        if not text:
+            value = random_page()
         else:
-            await ctx.send(specific_page(' '.join(arg)))
+            value = specific_page(text)
+            if type(value) == list:
+                value = value[:10] if len(value) > 10 else value
+                pack = ('1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟')
+                def check(reaction, user):
+                    return user == ctx.message.author and str(reaction.emoji) in pack
+                #Make the user pick the option
+                embed = discord.Embed(title="Pick an Option:",url="https://www.youtube.com/watch?v=oHg5SJYRHA0")
+                for i in range(len(value)):
+                    embed.add_field(name=pack[i]+" "+value[i],value="​",inline=False)
+                embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/foundation/thumb/2/20/Wikipedia-logo-v2-en_SVG.svg/200px-Wikipedia-logo-v2-en_SVG.svg.png')
+                show = await ctx.send(embed=embed)
+                [await show.add_reaction(pack[i]) for i in range(len(value))]
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
+                    await show.delete()
+                    value = wikipedia.page(value[pack.index(str(reaction))]).summary
+                except asyncio.TimeoutError:
+                    await show.edit(content='Senpai, You need to be a little fast')              
+        try:         
+            out = await ctx.send(value)
+        except:
+            paginated_text = self.paginate(value)
+            for page in paginated_text:
+                if page == paginated_text[-1]:
+                    out = await ctx.send(page)
+                    break
+                await ctx.send(page)
         
     @commands.command(help='Shows the help command')
     async def help(self,ctx,*cog):
@@ -131,6 +159,19 @@ class Info(Cog):
                         count+=1
                 specific_cog.set_footer(text='Tip: You can use --help <command> for more info')
         await ctx.send(embed=specific_cog)
+    
+    def paginate(self,text: str):
+            '''Simple generator that paginates text.'''
+            last = 0
+            pages = []
+            for curr in range(0, len(text)):
+                if curr % 1980 == 0:
+                    pages.append(text[last:curr])
+                    last = curr
+                    appd_index = curr
+            if appd_index != len(text)-1:
+                pages.append(text[last:curr])
+            return list(filter(lambda a: a != '', pages))
 
 def setup(bot):
     bot.add_cog(Info(bot))
