@@ -82,11 +82,11 @@ class Info(Cog):
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help='Throws random wiki articles \n if argument is given, tries to get the specified page \n [Very unreliable] ')
-    async def wiki(self,ctx,*,text):
+    async def wiki(self,ctx,*text):
         if not text:
             value = random_page()
         else:
-            value = specific_page(text)
+            value = specific_page(' '.join(text))
             if type(value) == list:
                 value = value[:10] if len(value) > 10 else value
                 pack = ('1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟')
@@ -104,7 +104,8 @@ class Info(Cog):
                     await show.delete()
                     value = wikipedia.page(value[pack.index(str(reaction))]).summary
                 except asyncio.TimeoutError:
-                    await show.edit(content='Senpai, You need to be a little fast')              
+                    await show.edit(content='Senpai, You need to be a little fast',embed=None)
+                    return              
         try:         
             out = await ctx.send(value)
         except:

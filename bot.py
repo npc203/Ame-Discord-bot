@@ -24,6 +24,8 @@ async def on_command_error(ctx,err):
     elif isinstance(err, commands.CommandOnCooldown):
             msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(err.retry_after)
             await ctx.send(msg)
+    elif isinstance(err,TypeError):
+        print()
     else:
         await client.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+str(err))
 
@@ -38,6 +40,6 @@ async def help(ctx):
     await ctx.send(embed=embed)
 '''
 
-with open('token.txt','r') as f:
+with open('../token.txt','r') as f:
     token=f.read()
 client.run(token)
