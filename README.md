@@ -3,7 +3,7 @@
 
 1. Highly recommended that you do this in a venv
 2. Just clone the repo and install the requirements
-3. Inside `bot.py` add your token (remove the lines where I read token.txt 😂.)
+3. Inside `bot.py` add your token (remove the lines where I read token.txt 😂)
 4. Run the `bot.py` 
 
 ```shell
