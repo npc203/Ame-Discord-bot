@@ -120,19 +120,18 @@ class Info(Cog):
         # *cog indicates cog or a command
         if not cog:
             full = discord.Embed(title='Help',url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description='Use `--help <command>` to find out more about them!',colour=discord.Colour.green())
-            cogs_desc = ''
+            full.add_field(name="Categories:",value='​')
             for x in filter(lambda x: str(x) != 'Eval', self.bot.cogs):
-                cogs_desc += ('{} : `{}`'.format(x,'`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands() if not cmd.hidden])+'\n'))
-            full.add_field(name="Categories:",value=cogs_desc,inline=False)
+                full.add_field(name = x , value='`{}`'.format('`,`'.join([cmd.name for cmd in self.bot.get_cog(x).get_commands() if not cmd.hidden])),inline=False)
             full.set_footer(text='Tip: you can also use --info <category>')
-            await ctx.send('',embed=full)
+            await ctx.send(embed=full)
         else:
             command = self.bot.get_command(cog[0])
             if command is None:
                 cmd_embed = discord.Embed(title='Error!',description='Gomenasai, given command doesn\'t exist : "'+cog[0]+'"',color=discord.Color.red())
             else:
-                usage='--'+str(command)+' '+' '.join([f'<{i[1]}>' for i in list(command.params.items())[2:]])
-                cmd_embed = discord.Embed(title=cog[0],url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=f'**Usage:** {usage}',colour=discord.Colour.green())
+                usage='--'+command.name+' '+' '.join([f'<{i[1]}>' for i in list(command.params.items())[2:]])
+                cmd_embed = discord.Embed(title=command.name,url='https://www.youtube.com/watch?v=oHg5SJYRHA0',description=f'**Usage:** {usage}',colour=discord.Colour.green())
                 cmd_embed.add_field(name='Description:',value=command.help)
                 if command.aliases:
                     cmd_embed.set_footer(text='aliases: {}'.format(', '.join(command.aliases)))

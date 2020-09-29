@@ -20,7 +20,6 @@ class Fun(Cog):
                 temp=[int(i) for i in i.content.split(',')]
                 self.serverinfo[self.bot.get_guild(temp[0])]=(self.bot.get_channel(temp[1]),int(temp[2]))
                 time.sleep(0.5)
-            print(self.serverinfo)
             await ctx.send("Automate this pls :(")
         else:
             await ctx.send("You aren't *high* enough")
