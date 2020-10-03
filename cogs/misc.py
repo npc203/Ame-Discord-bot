@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import Cog
+from discord.ext.commands import Cog,has_permissions
 import random,requests
 class Admin(Cog):
     """Has some administration related commands"""
@@ -70,6 +70,11 @@ class Admin(Cog):
                     await ctx.send(' '.join(args[:-1]))
         else:
             await ctx.send("***There was an attempt***")
+
+    @has_permissions(manage_channels=True)
+    @commands.command(help='Changes topic of the channel')
+    async def topic(self,ctx,*,text):
+        await ctx.channel.edit(topic=text)
     '''
      #help section copy pasta, not so good   
     @commands.command(pass_context=True)

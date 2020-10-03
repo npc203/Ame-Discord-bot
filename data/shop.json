@@ -1,0 +1,26 @@
+[
+    {"name":"Tomato",
+        "desc":"Your Audience threw a tomato at your face, wanna buy it?",
+        "price":4,
+        "picture":"https://banner2.cleanpng.com/20180629/geg/kisspng-bakery-baguette-croissant-food-bread-bakery-icon-5b366391c1bfa9.5364147015302910897936.jpg"
+    },
+    
+    {"name":"Potato",
+        "desc":"Umm Do I need to say something?",
+        "price":7,
+        "picture":"https://tenor.com/view/potato-intensifies-potato-intensifying-shaking-gif-17494626"
+    },
+    
+    {"name":"Bread",
+        "desc":"Basic food",
+        "price":10,
+        "picture":"https://banner2.cleanpng.com/20180629/geg/kisspng-bakery-baguette-croissant-food-bread-bakery-icon-5b366391c1bfa9.5364147015302910897936.jpg"
+    },
+    
+    {"name":"Watermelon",
+        "desc":"Kawaii melons for kawaii people",
+        "price":20,
+        "picture":"https://png.pngitem.com/pimgs/s/450-4509927_thumb-image-anime-girl-with-watermelon-hd-png.png"
+    }
+            
+]

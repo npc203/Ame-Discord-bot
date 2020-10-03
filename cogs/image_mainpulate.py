@@ -82,6 +82,10 @@ class Image(Cog):
             embed.add_field(name="Sorry the meme was NSFW", value="Forgive me Senpai, You can click the title to view the post tho")
         embed.set_footer(text="Upvotes: "+str(raw["ups"]))
         await ctx.send(embed=embed)
+    
+    @commands.command(hidden = True)
+    async def blott(self,ctx):
+        await ctx.send(file=discord.File('data/blott.png'))
 
 
 def setup(bot):

@@ -2,6 +2,7 @@ import discord
 import os
 from discord.ext import commands
 import datetime
+from utils import database as db
 client = commands.Bot(command_prefix='--')
 client.remove_command('help')
 for filename in os.listdir('./cogs'):
@@ -14,6 +15,9 @@ async def on_ready():
 @client.event
 async def on_command(ctx):
     await client.get_channel(743038667362140262).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.guild)+','+str(ctx.channel)+','+str(ctx.message.author)+'\n')
+    if ctx.channel.name not in ("spams",):
+        check = db.update_one({'id':ctx.author.id},{'$inc':{"cmd_count":1,"xp":4}})
+
     #print(ctx.command,ctx.guild,ctx.channel,ctx.message.author)
 
 
