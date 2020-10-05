@@ -5,76 +5,99 @@ import random,requests
 class Admin(Cog):
     """Has some administration related commands"""
     def __init__(self,bot):
-        self.perms=("Admin","Owner")
         self.limit=50
         self.bot = bot
-    @commands.command(help='Meant for Pinging the given name on every available text channel \n only epic people can use it')
+
+    async def cog_check(self, ctx):
+        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in ("Admin","Owner","Co-Owner")])>0:
+            return True
+        else:
+            await ctx.send("Senpai, You aren't ***high*** enough")
+            return False
+
+    @commands.command(help='Meant for Pinging the given name on every available text channel \n You need to have Owner/Admin/Co-Owner role to use this command')
     async def punish(self,ctx,name,times):
         try:
             times=int(times)
         except ValueError:
             ctx.send("Senpai, U need to give the command in the format `--punish <mention person> <number of times>` OwO")
-        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-                await ctx.message.delete()
-                if times>self.limit:
-                    await ctx.send("Pls don't abuse me senpai uwu")
-                else:
-                    for channel in ctx.guild.text_channels:
-                        try:
-                            for _ in range(int(times)):
-                                await channel.send(name)
-                            await channel.purge(limit=int(times))
-                        except:
-                            print("Skipped: #",channel,sep='')
+        await ctx.message.delete()
+        if times>self.limit:
+            await ctx.send("Pls don't abuse me senpai uwu")
         else:
-            print(type(ctx.message.author),ctx.message.author)
-            await ctx.send("```***There was an attempt***```")
+            for channel in ctx.guild.text_channels:
+                try:
+                    for _ in range(int(times)):
+                        await channel.send(name)
+                    await channel.purge(limit=int(times))
+                except:
+                    print("Skipped: #",channel,sep='')
         print("It is done")
     
-    @commands.command(help='Cleans the mess made by punish command \n only epic people can use it')
+    @commands.command(help='Cleans the mess made by punish command \n You need to have Owner/Admin/Co-Owner role to use this command',hidden=True)
     async def clean(self,ctx,times):
-        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-                await ctx.message.delete()    
-                if times>self.limit:
-                    await ctx.send("Pls don't abuse me senpai uwu") 
-                else:   
-                    for channel in ctx.guild.text_channels:
-                        try:
-                            await channel.purge(limit=int(times))
-                        except:
-                            print("Skipped: #",channel,sep='')
-        else:
-            #print(type(ctx.message.author),ctx.message.author)
-            await ctx.send("```***There was an attempt***```")
+        await ctx.message.delete()    
+        if times>self.limit:
+            await ctx.send("Pls don't abuse me senpai uwu") 
+        else:   
+            for channel in ctx.guild.text_channels:
+                try:
+                    await channel.purge(limit=int(times))
+                except:
+                    print("Skipped: #",channel,sep='')
         print("It is done")
 
-    @commands.command(help='Deletes messages upto the given limit in the present channel \n only epic people can use it')
+    @commands.command(help='Deletes messages upto the given limit in the present channel \n You need to have Owner/Admin/Co-Owner role to use this command')
     async def purge(self,ctx,limit:int):
-        #print([str(i.name) for i in ctx.message.author.roles],self.perms )
-        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            await ctx.message.delete()
-            if limit>self.limit:
-                await ctx.send("Pls don't abuse me senpai uwu")
-            else:
-                await ctx.channel.purge(limit=limit)
+        await ctx.message.delete()
+        if limit>self.limit:
+            await ctx.send("Pls don't abuse me senpai uwu")
         else:
-            await ctx.send("***There was an attempt***")
+            await ctx.channel.purge(limit=limit)
+
     
-    @commands.command(help='SPAMS \n only epic people can use it')
+    @commands.command(help='SPAMS \n You need to have Owner/Admin/Co-Owner role to use this command')
     async def spam(self,ctx,*args):
-        if len([x for x in [str(i.name) for i in ctx.message.author.roles] if x in self.perms])>0:
-            if int(args[-1]) > self.limit:
-                await ctx.send("Pls don't abuse me senpai uwu")
-            else:
-                for i in range(int(args[-1])):
-                    await ctx.send(' '.join(args[:-1]))
+        if int(args[-1]) > self.limit:
+            await ctx.send("Pls don't abuse me senpai uwu")
         else:
-            await ctx.send("***There was an attempt***")
+            for i in range(int(args[-1])):
+                await ctx.send(' '.join(args[:-1]))
 
     @has_permissions(manage_channels=True)
     @commands.command(help='Changes topic of the channel')
     async def topic(self,ctx,*,text):
         await ctx.channel.edit(topic=text)
+    
+    @commands.group(pass_context=True, invoke_without_command=True)
+    async def ticket(self,ctx,*args):
+        if args:
+            if ctx.invoked_subcommand is None:
+                await ctx.send('Invalid Ticket command passed...')
+        else:
+            overwrites = {
+                ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                ctx.guild.me: discord.PermissionOverwrite(read_messages=True)
+            }
+
+            channel = await ctx.guild.create_text_channel(f'ticket-{ctx.author.name}-{ctx.author.discriminator}')
+            await channel.send("Use `--close` or `--ticket close` to delete this channel")
+            success = discord.Embed(title = "Successfully Created a Ticket",description=f"Created the channel:<#{channel.id}>")
+            success.set_thumbnail(url="http://clipart-library.com/images_k/movie-ticket-transparent/movie-ticket-transparent-20.jpg")
+            await ctx.send(embed = success)
+           
+    
+    @ticket.command()
+    async def delete(self,ctx):
+        check = ctx.channel.name.split('-')
+        if len(check)>0 and check[0]=="ticket":
+            await ctx.channel.delete()
+        else:
+            ctx.send("Not a valid ticket channel")
+
+    @commands.command(name='close')
+    async def actual_command(self,ctx):
+        await self.delete(ctx)
     '''
      #help section copy pasta, not so good   
     @commands.command(pass_context=True)

@@ -23,13 +23,20 @@ async def on_command(ctx):
 
 @client.event
 async def on_command_error(ctx,err):
+    try:
+        if isinstance(err.original,discord.Forbidden):
+            halp = discord.Embed(title='Missing permissions!',description="Please give me permissions senpai",color=discord.Color.red())
+            halp.set_thumbnail(url="https://media1.tenor.com/images/9eff85aac8f21da39246ef40787864c8/tenor.gif?itemid=7357054")
+            await ctx.send(embed=halp)
+    except:
+        pass
     if isinstance(err,commands.CommandNotFound):
         pass
     elif isinstance(err, commands.CommandOnCooldown):
             msg = 'UwU Don\'t abuse me senpai,try again in {:.2f}s'.format(err.retry_after)
             await ctx.send(msg)
     elif isinstance(err,TypeError):
-        print()
+        ctx.send('*Umm, check the way on how to use me baka!, type: `--help <command-name> to learn more`')
     else:
         await client.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+str(err))
 

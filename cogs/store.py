@@ -3,12 +3,14 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 import random,time,requests
 import asyncio
+import pyfiglet 
 class Fun(Cog):
     """Has a bunch of fun commands"""
     def __init__(self, bot):
         self.bot = bot
         self.perms=("Admin","Owner","Co-Owner")
-        
+        with open('data/font_list.txt','r') as f:
+            self.fonts = f.read().splitlines()
     @commands.command(hidden=True)
     async def setup(self,ctx):
         #Automate this command
@@ -126,6 +128,25 @@ class Fun(Cog):
         else:
             await ctx.send('Senpai, u need to {} baka!'.format('mention someone' if sentence else 'type something'))
     
+    @commands.command(help='Text Art stuff',aliases=['text'])
+    async def txt(self,ctx,*,sentence):
+        if '-r' in sentence:
+            font = random.choice(self.fonts)
+            sentence = sentence.replace('-r','')
+        elif '-f' in sentence:                    
+            temp = sentence.split()
+            for i in range(len(temp)):
+                if temp[i] == '-f':
+                    #poppin 2 times to remove the flag and its value too
+                    temp.pop(i)
+                    font = temp[i]
+                    temp.pop(i)
+                    break
+            sentence = ' '.join(temp)
+        else:
+            font = 'standard'
+        result = pyfiglet.figlet_format(sentence,font = font)
+        await ctx.send(f"```{result}```") 
 
 def setup(bot):
     bot.add_cog(Fun(bot))
