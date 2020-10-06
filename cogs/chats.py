@@ -72,30 +72,35 @@ class Chats(Cog):
 
     @commands.command(help='Get\'s the meaning of the word using the Owl Dictionary api',aliases=['w'])
     async def word(self,ctx,word):
-        #[{'message': 'No definition :('}]
         headers = {"Authorization":utils.auth["owl_auth"]}
         async with self.bot.session.get(f"https://owlbot.info/api/v4/dictionary/{word}",headers=headers) as f:
             resp = await f.json()
-        #print(resp)
+        #checking if word not found: [{'message': 'No definition :('}]
+        if type(resp) == list:
+            embed = discord.Embed(title="Error",description="Word not found, Use google",color = discord.Color.red())
+            embed.set_footer(text=resp[0]["message"])
+            await ctx.send(embed=embed)
+            return
         def check(reaction, user):
             return user == ctx.message.author and str(reaction.emoji) in ['⬅️', '➡️'] and reaction.message.id == show.id
         page= 1
         size = len(resp["definitions"])
         show = await ctx.send(embed = await self.disp_embed(ctx,resp,page,size))
-        await show.add_reaction( '⬅️')
-        await show.add_reaction('➡️')                  
-        while True:
-            try:
-                reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
-                #print(reaction.emoji)
-                if reaction.emoji == '⬅️' and page-1>0:
-                    page -= 1
-                elif reaction.emoji == '➡️' and page+1<=size:
-                    page += 1
-                await show.edit(embed = await self.disp_embed(ctx,resp,page,size)) 
-            except asyncio.TimeoutError:
-                await show.clear_reactions()
-                break
+        if size > 1:
+            await show.add_reaction( '⬅️')
+            await show.add_reaction('➡️')                  
+            while True:
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
+                    #print(reaction.emoji)
+                    if reaction.emoji == '⬅️' and page-1>0:
+                        page -= 1
+                    elif reaction.emoji == '➡️' and page+1<=size:
+                        page += 1
+                    await show.edit(embed = await self.disp_embed(ctx,resp,page,size)) 
+                except asyncio.TimeoutError:
+                    await show.clear_reactions()
+                    break
         
     async def disp_embed(self,ctx,resp,page,size):
         #print(resp)
@@ -106,9 +111,9 @@ class Chats(Cog):
             embed.set_thumbnail(url=show["image_url"])    
         if show["example"]:
             text = utils.html_parse(show["example"])
-            embed.add_field(name='Example:',value=text,inline=True)
+            embed.add_field(name='Example:',value=text,inline=False)
         if show["type"]:
-            embed.add_field(name='Type:',value=show["type"],inline=True)
+            embed.add_field(name='Type:',value=show["type"].capitalize(),inline=False)
         embed.set_footer(text=f"page: {page}/{size}")
         return embed
 
