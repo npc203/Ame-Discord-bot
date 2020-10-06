@@ -2,9 +2,17 @@ import discord
 import os
 from discord.ext import commands
 import datetime
+import aiohttp
+import utils
 from utils import database as db
 client = commands.Bot(command_prefix='--')
 client.remove_command('help')
+
+client.session = aiohttp.ClientSession()
+
+
+#client.load_extension('cogs.chats')
+
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
      client.load_extension(f'cogs.{filename[:-3]}')
@@ -12,6 +20,8 @@ for filename in os.listdir('./cogs'):
 @client.event
 async def on_ready():
     print("ready")
+
+
 @client.event
 async def on_command(ctx):
     await client.get_channel(743038667362140262).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.guild)+','+str(ctx.channel)+','+str(ctx.message.author)+'\n')
@@ -19,7 +29,6 @@ async def on_command(ctx):
         check = db.update_one({'id':ctx.author.id},{'$inc':{"cmd_count":1,"xp":4}})
 
     #print(ctx.command,ctx.guild,ctx.channel,ctx.message.author)
-
 
 @client.event
 async def on_command_error(ctx,err):
@@ -51,6 +60,4 @@ async def help(ctx):
     await ctx.send(embed=embed)
 '''
 
-with open('../token.txt','r') as f:
-    token=f.read()
-client.run(token)
+client.run(utils.auth["token"])

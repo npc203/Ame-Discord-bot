@@ -8,7 +8,7 @@ class Image(Cog):
     """Funny stuff with images"""
     def __init__(self, bot):
         self.bot = bot
-        self.session = aiohttp.ClientSession()
+        self.session = bot.session
     
     @commands.cooldown(1, 20, commands.BucketType.user)
     @commands.command(help="Show's your avatar")

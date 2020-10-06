@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random,time,requests
+import random,time
 import asyncio
 import pyfiglet 
 class Fun(Cog):
@@ -128,7 +128,7 @@ class Fun(Cog):
         else:
             await ctx.send('Senpai, u need to {} baka!'.format('mention someone' if sentence else 'type something'))
     
-    @commands.command(help='Text Art stuff',aliases=['text'])
+    @commands.command(help='Text Art stuff\n add -f <font> = for custom fonts \n -r = for random font',aliases=['text'])
     async def txt(self,ctx,*,sentence):
         if '-r' in sentence:
             font = random.choice(self.fonts)

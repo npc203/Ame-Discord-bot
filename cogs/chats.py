@@ -1,9 +1,10 @@
 import discord
-from discord import Webhook, RequestsWebhookAdapter
+from discord import Webhook
 from discord.ext import commands
 from discord.ext.commands import Cog
-import random,requests
-import asyncio,io
+import random
+import asyncio,io 
+import utils
 class Chats(Cog):
     """Weeby commands"""
     def __init__(self, bot):
@@ -68,6 +69,48 @@ class Chats(Cog):
                 with open(f'data/{word}.txt','r',encoding="utf-8") as f:
                     self.cache[word]=f.readlines()
         return random.choice(self.cache[word])
+
+    @commands.command(help='Get\'s the meaning of the word using the Owl Dictionary api',aliases=['w'])
+    async def word(self,ctx,word):
+        #[{'message': 'No definition :('}]
+        headers = {"Authorization":utils.auth["owl_auth"]}
+        async with self.bot.session.get(f"https://owlbot.info/api/v4/dictionary/{word}",headers=headers) as f:
+            resp = await f.json()
+        #print(resp)
+        def check(reaction, user):
+            return user == ctx.message.author and str(reaction.emoji) in ['⬅️', '➡️'] and reaction.message.id == show.id
+        page= 1
+        size = len(resp["definitions"])
+        show = await ctx.send(embed = await self.disp_embed(ctx,resp,page,size))
+        await show.add_reaction( '⬅️')
+        await show.add_reaction('➡️')                  
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=60,check = check)
+                #print(reaction.emoji)
+                if reaction.emoji == '⬅️' and page-1>0:
+                    page -= 1
+                elif reaction.emoji == '➡️' and page+1<=size:
+                    page += 1
+                await show.edit(embed = await self.disp_embed(ctx,resp,page,size)) 
+            except asyncio.TimeoutError:
+                await show.clear_reactions()
+                break
+        
+    async def disp_embed(self,ctx,resp,page,size):
+        #print(resp)
+        show = resp["definitions"][page-1]
+        embed = discord.Embed(title=resp["word"].capitalize(),color = discord.Color.green())
+        embed.add_field(name='Definition:',value=utils.html_parse(show["definition"]),inline=False)
+        if show["image_url"]:
+            embed.set_thumbnail(url=show["image_url"])    
+        if show["example"]:
+            text = utils.html_parse(show["example"])
+            embed.add_field(name='Example:',value=text,inline=True)
+        if show["type"]:
+            embed.add_field(name='Type:',value=show["type"],inline=True)
+        embed.set_footer(text=f"page: {page}/{size}")
+        return embed
 
 def setup(bot):
     bot.add_cog(Chats(bot))

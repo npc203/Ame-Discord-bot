@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog,has_permissions
-import random,requests
+import random
 class Admin(Cog):
     """Has some administration related commands"""
     def __init__(self,bot):
@@ -93,7 +93,7 @@ class Admin(Cog):
         if len(check)>0 and check[0]=="ticket":
             await ctx.channel.delete()
         else:
-            ctx.send("Not a valid ticket channel")
+            await ctx.send("Not a valid ticket channel")
 
     @commands.command(name='close')
     async def actual_command(self,ctx):

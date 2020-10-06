@@ -1,4 +1,3 @@
-import requests
 from html import unescape
 from bs4 import BeautifulSoup
 import wikipedia
@@ -31,6 +30,7 @@ class Info(Cog):
         self.headers = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
         self.URL = 'https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/'
         self.bot=bot
+        self.session = bot.session
         with open('data/quotes.json') as f:
             self.quotes = json.load(f)
         with open('data/love.txt','r',encoding="utf8") as f:
@@ -43,8 +43,8 @@ class Info(Cog):
         if not args:
             await ctx.send(f'Pong! in `{round(self.bot.latency * 1000)}ms`')
         else:
-            page = requests.get(self.URL,headers=self.headers)
-            soup = BeautifulSoup(page.content, 'html.parser')
+            async with self.session.get(self.URL,headers=self.headers) as page:
+                soup = BeautifulSoup(await page.read(), 'html.parser')
             embed = discord.Embed(title='EmeraldBattleCraft',url='https://www.planetminecraft.com/server/emeraldbattlecraft-2702726/',colour=discord.Colour.purple())
             #embed.set_author(name="EmeraldBattleCraft")
             embed.set_thumbnail(url="https://i.imgur.com/fXjogry.png")
@@ -60,16 +60,17 @@ class Info(Cog):
                 embed.add_field(name='Players:',value='No one here :(',inline=False)
                 await self.bot.get_channel(745259187457490946).send(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+','+str(ctx.command)+','+str(ctx.message.author)+','+str(ctx.guild)+','+"EBC 0 player")
                 await ctx.send(embed=embed) 
-            del soup,page,table,embed
+            del soup,table,embed
             
             #await ctx.send("```Players Online: "+soup.find("table").find(class_='stat').text+"\n"+','.join([i.text.replace('\n','') for i in soup.find_all(class_="mbl-user")])+"```")
         
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random joke")
     async def joke(self,ctx):
-        r=json.loads(requests.get("https://official-joke-api.appspot.com/random_joke").text)
-        await  ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
-        del r
+        async with self.session.get("https://official-joke-api.appspot.com/random_joke") as f:
+            r=await f.json()
+            await ctx.send('```'+r["setup"]+'\n'+r["punchline"]+'```')
+
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.command(help="Get's a random quote/big brain from the internet\n --quote love gives love quotes (probably)")
